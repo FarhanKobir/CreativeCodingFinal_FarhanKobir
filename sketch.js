@@ -1,3 +1,7 @@
+// Maps & Memories
+// Creative Coding Final Project
+// Author: Farhan Kobir
+
 // Photo class
 // each photo has a latitude, longitude, path, and description associated with it
 class Photo {
@@ -39,6 +43,8 @@ let welcome;
 let pw, ph, px, py;
 let margin;
 let cx, cy;
+
+let infoX, infoY, closeX, closeY;
 
 
 function preload(){
@@ -130,7 +136,7 @@ function draw(){
         txt = 
         'Instructions:\n\n' +
         '• Click Start to load the map.\n' +
-        '• Pan & zoom to see photo clusters.\n' +
+        '• Pan to see photo clusters.\n' +
         '• Zoom into a cluster for a more detailed look.\n' +
         '• The more you zoom, the more individual photo locations will appear.\n' +
         '• Click a marker to view that photo.\n\n';
@@ -162,7 +168,7 @@ function draw(){
             textAlign(CENTER, CENTER);
             textSize(14);
             text(c.properties.point_count, pos.x, pos.y); // says the number of photos in cluster
-            } else {
+            } else { // if not cluster, then individual
             fill(255, 50, 50); 
             noStroke(); 
             ellipse(pos.x, pos.y, 12); // individual photo marker, red
@@ -172,7 +178,10 @@ function draw(){
       } else if (state == 'photo') { // photo pop up
             fill(0, 0, 0, 180); 
             rect(0, 0, width, height);
-            ph = height * 0.65;
+            ph = height * 0.67;
+            pw = width * 0.6;
+            px = (width - pw)/2;
+            py = (height - ph)/2;
             fill(255); 
             rect(px, py, pw, ph, 12);
             let p;
@@ -201,7 +210,31 @@ function draw(){
             fill(255); 
             text('Close', px+pw - bw -20 + bw/2, py+ph-bh/2 -20);
 
-      
+        } else if (state == 'desc') { // description pop up
+            fill(0, 0, 0, 180);
+            rect(0, 0, width, height);
+            pw = width*0.5
+            ph = height*0.4;
+            px = (width-pw)/2;
+            py = (height-ph)/2;
+            fill(255);
+            rect(px, py, pw, ph, 12);
+            fill(30);
+            textAlign(LEFT, TOP);
+            textSize(16);
+            let p;
+            for (let i = 0; i < photos.length; i++) {
+                if (photos[i].imgPath == selectedPhoto) { // get the photo that was selected
+                    p = photos[i];
+                    break;
+                }
+            }
+            text(p.desc, px+20, py+20, pw-40, ph-60);
+            fill(0,150,255); rect(px+pw/2-bw/2, py+ph-bh-20, bw, bh, 6);
+            fill(255);
+            textAlign(CENTER, CENTER);
+            textSize(18);
+            text('Close', px+pw/2, py+ph-bh/2 - 20);
 
       }
 }
@@ -223,7 +256,48 @@ function mousePressed() {
       if (mouseX > cx && mouseX < cx + bw && mouseY > cy && mouseY < cy + bh) {
         state = 'start';
       }
+    } else if (state == 'map') { // checking if cluster or marker was selected
+        // from previously mentioned things I learned (line 150)
+        let zoom=myMap.zoom();
+        let bounds=myMap.map.getBounds().toBBoxString().split(',').map(parseFloat);
+        let clusters=clusterIndex.getClusters(bounds,zoom);
+        clusters.forEach(c => {
+        let [lng,lat]=c.geometry.coordinates;
+        let pos=myMap.latLngToPixel(lat,lng);
+        if(dist(mouseX,mouseY,pos.x,pos.y)<20) {
+            if(c.properties.cluster) {
+            myMap.map.setView([lat,lng],zoom+2);
+            } else {
+            selectedPhoto = c.properties.imgPath;
+            state = 'photo';
+            }
+        }
+        });
+    } else if (state == 'photo') { // photo pop up buttons
+        pw = width*0.6;
+        ph = height*0.6;
+        px = (width-pw)/2;
+        py = (height-ph)/2;
+        infoX = px+20;
+        infoY = py+ph-bh-20;
+        closeX = px+pw-bw-20;
+        closeY = infoY;
+        if (mouseX > infoX && mouseX < infoX+bw && mouseY > infoY && mouseY < infoY+bh) {
+            state='desc';
+        }
+        if (mouseX > closeX && mouseX < closeX+bw && mouseY > closeY && mouseY < closeY+bh) {
+            state='map';
+        }
+    } else if (state == 'desc') { // Description pop up buttons
+        pw = width*0.5;
+        ph = height*0.4;
+        px = (width-pw)/2;
+        py = (height-ph)/2;
+        cx = px+pw/2-bw/2;
+        cy = py+ph-bh-20;
+        if (mouseX>cx && mouseX<cx+bw && mouseY>cy && mouseY<cy+bh) {
+            state='photo';
+        }
     }
-
   }
 
