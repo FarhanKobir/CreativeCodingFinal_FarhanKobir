@@ -50,8 +50,10 @@ let infoX, infoY, closeX, closeY;
 function preload(){
     welcome = loadImage("data/welcome.png");
     photos = [
-        new Photo(40.668766538024485, -73.96449548464334, 'data/bbg1.jpg', 'Brooklyn Botanic Garden, spring bloom'),
-        new Photo(40.77960717917997, -73.9631581726974, 'data/met1.jpg', 'The Metropolitan Museum of Art entrance')
+        new Photo(40.668766538024485, -73.96449548464334, 'data/bbg1.jpg', 'Brooklyn Botanic Garden, White Blossom'),
+        new Photo(40.77960717917997, -73.9631581726974, 'data/met1.jpg', 'The Metropolitan Museum of Art Entrance'),
+        new Photo(39.98146253672869, -75.21233321843438, 'data/shofuso1.jpg', 'Shofuso Japanese Cultural Center'),
+        new Photo(39.94126544861629, -75.16140943329218, 'data/philly1.jpg', "Random alley way")
       ];
 
       for(let i = 0; i < photos.length; i++){ // preload each pic in the array
