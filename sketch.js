@@ -281,7 +281,7 @@ function mousePressed() {
         px = (width-pw)/2;
         py = (height-ph)/2;
         infoX = px+20;
-        infoY = py+ph-bh-20;
+        infoY = py+ph-bh+10;
         closeX = px+pw-bw-20;
         closeY = infoY;
         if (mouseX > infoX && mouseX < infoX+bw && mouseY > infoY && mouseY < infoY+bh) {
